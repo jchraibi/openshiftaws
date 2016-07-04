@@ -1,0 +1,22 @@
+[[refarch_details]]
+== Reference Implementation
+
+The image below provides a high-level representation of the components within this
+reference architecture.  Using Amazon Web Services, resources are highly
+available using a combination of multiple availability zones, Elastic Load Balancers,
+and an S3 bucket. Instances deployed are given specific roles to support OpenShift.
+The Bastion host limits the external access to internal servers by insuring that
+all SSH traffic passes through the Bastion host. The master instances host the
+OpenShift master components such as etcd and the OpenShift API.  The Application
+instances are for users to deploy their containers while the Infrastructure
+instances are used for the OpenShift Router and Registry.  Authentication is managed
+by Google OAuth.  OpenShift on AWS has two cloud native storage options; Elastic Block
+Storage are used for the filesystem of instances but can also be used for persistent 
+storage in containers.  The other storage option is S3 which is object based storage. 
+S3 is used for the persistent storage of the OpenShift Registry.
+
+
+image::images/OSE-on-AWS-Architecture.png[]
+
+
+// vim: set syntax=asciidoc:

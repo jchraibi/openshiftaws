@@ -1,0 +1,31 @@
+#!/bin/bash
+
+LOGFILE=./deployment-logs/openshift-install-`hostname -s`-`date +%F_%T`.log
+
+(
+
+ECHO_STAGE() {
+echo
+echo
+echo
+echo "$1"
+echo
+echo
+echo
+}
+
+DEPLOY_OSE() {
+ECHO_STAGE "deploying OSE"
+pushd ../refarch-ansible
+ansible-playbook -i inventory/aws/hosts -e 'openshift_master_cluster_hostname=scollier-internal-master-elb.scott-aws.sysdeseng.com openshift_master_cluster_public_hostname=scollier-openshift-master.scott-aws.sysdeseng.com public_hosted_zone=scott-aws.sysdeseng.com wildcard_zone=apps.scott-aws.sysdeseng.com console_port=8443 deployment_type=openshift-enterprise rhn_user=user rhn_password=pass region=us-east-1 s3_username=scollier-openshift-s3-docker-registry' playbooks/openshift-install.yaml
+popd
+}
+
+# Call all functions for deployment
+DEPLOY_OSE
+
+) 2>&1 | tee ${LOGFILE}
+
+echo
+echo "Done with [openshift-install]. Wrote logfile: ${LOGFILE}"
+echo

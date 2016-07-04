@@ -1,0 +1,104 @@
+= Deploying an OpenShift Enterprise 3 Distributed Architecture on Amazon Web Services
+Ryan Cook <rcook@redhat.com> ; Scott Collier <scollier@redhat.com>
+v1.0, 2016-02-04
+:doctype: book
+//:title-logo: images/rh-ra-banner.png
+:title-logo-image: image:images/template/rh-ra-banner.png[scaledwidth=70%,align=center]
+//:footer-logo: images/rh-ra-banner.png
+//:header-logo: images/rh-logo.png
+// Settings:
+:compat-mode!:
+:numbered:
+//:autofit:
+:chapter-label:
+:specialnumbered!:
+:experimental:
+:back-cover-image: image:images/bckcover.pdf[]
+:listing-caption: Listing
+:toc:
+:icons: font
+:toclevels: 3
+ifdef::backend-pdf[]
+:pagenums:
+:pygments-style: bw
+:source-highlighter: pygments
+endif::[]
+
+[asbstract]
+//empty on purpose so that legal can be on separate page and not conflict with toc
+
+<<<
+
+100 East Davie Street +
+Raleigh NC 27601 USA +
+Phone: +1 919 754 3700 +
+Phone: 888 733 4281 +
+PO Box 13588 +
+Research Triangle Park NC 27709 USA +
+
+Intel, the Intel logo and Xeon are registered trademarks of Intel Corporation or its subsidiaries in the United States and other countries.
+All other trademarks referenced herein are the property of their respective owners.
+
+© 2015 by Red Hat, Inc. This material may be distributed only subject to the terms and conditions set forth in the Open Publication License, V1.0 or later (the latest version is presently available at http://www.opencontent.org/openpub/).
+
+The information contained herein is subject to change without notice. Red Hat, Inc. shall not be liable for technical or editorial errors or omissions contained herein.
+
+Distribution of modified versions of this document is prohibited without the explicit permission of Red Hat Inc.
+
+Distribution of this work or derivative of this work in any standard (paper) book form for commercial purposes is prohibited unless prior permission is obtained from Red Hat Inc.
+
+The GPG fingerprint of the security@redhat.com key is:
+CA 20 86 86 2B D6 9D FC 65 F6 EC C4 21 91 80 CD DB 42 A6 0E
+
+Send feedback to refarch-feedback@redhat.com
+
+<<<
+
+include::shared-doc/commentsfeedback.asciidoc[]
+
+include::docs/ch1_execsummary.adoc[]
+
+include::shared-doc/ComponentOverview.asciidoc[]
+
+include::docs/ch3_compoverview.adoc[]
+
+include::docs/ch4_refarchconfig.adoc[]
+
+include::docs/ch4_nodes.adoc[]
+
+include::docs/ch4_bastion.adoc[]
+
+include::docs/ch4_dhcp.adoc[]
+
+include::docs/ch4_dynamic_inventory.adoc[]
+
+include::docs/ch4_iam.adoc[]
+
+include::docs/ch4_route53.adoc[]
+
+include::docs/ch4_router.adoc[]
+
+include::docs/ch4_security-groups.adoc[]
+
+include::docs/ch4_ssh.adoc[]
+
+include::docs/ch4_vpc.adoc[]
+
+include::docs/ch4_google-oauth.adoc[]
+
+include::docs/ch5_deploying-with-ansible.adoc[]
+
+include::docs/ch5_deploying-with-bash.adoc[]
+
+include::docs/ch6_deploying-ose.adoc[]
+
+include::docs/ch7_post-deployment-actions.adoc[]
+
+include::docs/ch8_operational-mgmt.adoc[]
+
+include::docs/ch9_conclusion.adoc[]
+
+include::docs/appendix.adoc[]
+
+include::shared-doc/Trademarks.asciidoc[]
+// vim: set syntax=asciidoc:

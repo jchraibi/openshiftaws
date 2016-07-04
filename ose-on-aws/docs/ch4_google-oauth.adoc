@@ -1,0 +1,51 @@
+[[refarch_details]]
+
+===  _Google OAuth_
+One of the common authentication mechanisms for Openshift 3 is Google authentication. To setup
+Google oAuth for OpenShift perform the following setps.
+
+==== Configuring OAuth
+
+*Browse to https://console.developers.google.com/apis/library*
+
+image::images/new-proj.png[]
+
+* Create a project
+  - Enter a Project name
+  - Click Create
+* Click on the newly created Project under Project Name to begin working within that space.
+
+*From API Manager Dashboard*
+
+* Click Credentials on the left below Overview
+  - Select Create Credentials -> Oauth client ID
+
+*From the Oath Client ID Dashboard*
+
+* Select Web Application
+* Specify a Name
+* Enter the "Authorized redirect URIs"
+  - Specify the URL used for the OpenShift Master Cluster Public Hostname and add
+  the google oath callback
+  EXAMPLE: https://sysdeseng.com:8443/oauth2callback/google
+* Click Create
+* Copy and paste the Oauth client information to the workstation that the Ansible
+ playbooks will be executed
+
+
+image::images/client-id.png[]
+==== Oauth variable
+*Modify the variable file to add the Google Oauth information*
+----
+vi /home/user/git/openshift-ansible-contrib/refarch-ansible/playbooks/vars/main.yaml
+
+# Google OAuth
+openshift_master_identity_providers: [ {'name': 'google', 'kind': 'GoogleIdentityProvider', 'login': 'true', 'challenge': 'false', 'mapping_method': 'claim', 'client_id': '246538064525-5ic2e4b1b9upla7hddfkhuf8s6eq2rfj.apps.googleusercontent.com', 'client_secret': 'Za3PWDcomputerblueBljgBMBBF', 'hosted_domain': 'redhat.com'} ]
+----
+
+==== More information
+For more information on Google Oath and other authentication methods.
+
+https://docs.openshift.com/enterprise/3.2/install_config/configuring_authentication.html
+
+// vim: set syntax=asciidoc:

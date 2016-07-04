@@ -1,0 +1,19 @@
+{
+  "Comment": "internal master elb record",
+  "Changes": [
+    {
+      "Action": "DELETE",
+      "ResourceRecordSet": {
+        "Name": "scollier-internal-master-elb.scott-aws.sysdeseng.com",
+        "Type": "CNAME",
+        "TTL": 60,
+        "ResourceRecords": [
+          {
+            "Value": "ose-internal-master-1213405368.us-east-1.elb.amazonaws.com"
+          }
+        ]
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,5 @@
+-tempest\.api\.compute\.floating_ips.*
+-tempest\.thirdparty\.boto.*
+-tempest\.api\.compute\.floating_ips.*
+-tempest\.api\.network\.test_floating_ips.*
+-tempest\.api\.network\.admin\.test_floating_ips_admin_actions.*

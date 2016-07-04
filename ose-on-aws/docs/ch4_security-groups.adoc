@@ -1,0 +1,166 @@
+[[refarch_details]]
+
+====  _Security Groups_
+
+In this reference architecture, 7 security groups are created. The purpose is to
+ restrict traffic from both outside the VPC to servers inside the VPC as well as
+ server to server communications inside the VPC. See TABLE XXX to see which security
+ groups are getting created.  More details will be provided about each security group
+ in great detail.
+
+===== _Master ELB Security Group_
+.AWS Master ELB Security Group Details - Inbound
+image::images/Master-ELB-SG.png["Master ELB SG",align="center"]
+|====
+^|Inbound ^|From
+
+| 8443 / TCP | Anywhere
+|====
+
+
+.AWS Internal Master ELB Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+.AWS Internal Master ELB Security Group Details - Inbound
+image::images/Internal-Master-ELB-SG.png["Internal Master ELB SG",align="center"]
+|====
+^|Inbound ^|From
+
+| 8443 / TCP | Anywhere
+|====
+
+
+.AWS Master ELB Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+===== _Bastion security group_
+image::images/Bastion-SG.png["Bastion SG",align="center"]
+
+
+.AWS Bastion Security Group Details - Inbound
+|====
+^|Inbound ^|From
+
+| 22 / TCP | Anywhere
+|====
+
+
+.AWS Bastion Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+===== _Master security group_
+
+.AWS Master Security Group Details - Inbound
+image::images/Master-SG.png["Master SG",align="center"]
+|====
+^|Inbound ^|From
+
+| 22 / TCP | Bastion Security Group
+| 8443 / TCP | CIDR
+| 8443 / TCP | Master ELB Security Group
+| 8444 / TCP | CIDR
+| 8053  / TCP| CIDR
+| 4789 / TCP | CIDR
+| 2379 / TCP | CIDR
+| 10255 / TCP and UDP | CIDR
+| 9090 / TCP| CIDR
+| 2380 / TCP | CIDR
+| 5404 / TCP | CIDR
+| 5405 / TCP | CIDR
+| 2224  / TCP| CIDR
+| 24224 / TCP and UDP | CIDR
+|====
+
+
+.AWS Master Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+
+===== _Router ELB security group_
+
+.AWS Router ELB Security Group Details - Inbound
+image::images/Router-ELB-SG.png["Router ELB SG",align="center"]
+|====
+^|Inbound ^|From ^|Outbound ^| To
+
+| 443 / TCP | Anywhere
+| 80 / TCP | Anywhere
+|====
+
+
+.AWS Router ELB Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+===== _Infrastructure Nodes security group_
+
+.AWS Infrastructure Nodes Security Group Details - Inbound
+image::images/Infra-node-SG.png["Infrastructure Node SG",align="center"]
+|====
+^|Inbound ^|From
+
+| 22 / TCP | Bastion Security Group
+| 80 / TCP | Router Security Group
+| 443 / TCP | Router Security Group
+| 10250 / TCP | Master Security Group
+| 10255 / TCP and UDP | Master Security Group
+| 4789 / TCP | CIDR
+|====
+
+
+.AWS Infrastructure Nodes Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+
+===== _Application Nodes security group_
+
+.AWS Application Nodes Security Group Details - Inbound
+image::images/App-node-SG.png["Application Node SG",align="center"]
+|====
+^|Inbound ^|From
+
+| 22 / TCP | Bastion Security Group
+| 10250 / TCP | Master Security Group
+| 10255 / TCP and UDP | Master Security Group
+| 4789 / TCP | CIDR
+|====
+
+
+.AWS Application Nodes Security Group Details - Outbound
+|====
+^|Outbound ^|To
+
+| All | All
+|====
+
+
+
+// vim: set syntax=asciidoc:

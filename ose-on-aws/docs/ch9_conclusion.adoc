@@ -1,0 +1,18 @@
+[[refarch_details]]
+== Conclusion
+
+Red Hat solutions involving the OpenShift PaaS are created to deliver a production-ready foundation that simplifies the deployment process, shares the latest best practices, and provides a stable highly available environment on which to run your production applications.
+
+A successful deployment consists of the following:
+
+* Properly configured servers that meet the OpenShift pre-requisites.
+* OpenShift Masters in Multiple Availability Zones
+* Infrastructure nodes in Multiple Availability Zones with Router and Registry pods scaled accordingly
+* Elastic Load Balancers for the Master instances and for the Infrastructure instances
+* S3 storage for persistent storage of container images
+* A role assigned to instances that will allow OpenShift to mount EBS volumes
+
+
+For any questions or concerns, please email refarch-feedback@redhat.com and ensure to visit the http://red.ht/1IEYbQT[Red Hat Reference Architecture] page to find about all of our Red Hat solution offerings. 
+
+// vim: set syntax=asciidoc:

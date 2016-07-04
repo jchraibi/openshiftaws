@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Comments here
+
+# Source Variables
+source ../vars &> /dev/null
+
+# Grab master ELB name
+while [ -z "$INTERAL_MASTER_ELB" ]; do
+    INTERAL_MASTER_ELB=$(aws elb describe-load-balancers \
+    --query 'LoadBalancerDescriptions[].DNSName[]' \
+    | grep ose-internal-master | tr -d '"' | tr -d ',' | tr -d ' ')
+done
+
+# Set up Route53 record
+while [ -z "$HOSTED_ZONE" ]; do
+    HOSTED_ZONE=$(aws route53 list-hosted-zones-by-name \
+    --dns-name=$INFRA_DNS \
+    --output text | awk '/HOSTED/ { print $3 }')
+done
+
+sed -i \
+-e "s/\"Value.*/\"Value\": \"$INTERAL_MASTER_ELB\"/g" \
+-e "s/\"Name.*/\"Name\": \"$INTERAL_MASTER_ELB_CNAME\",/g" master/internal-master-elb-a-record.json
+
+sed -i \
+-e "s/\"Value.*/\"Value\": \"$INTERAL_MASTER_ELB\"/g" \
+-e "s/\"Name.*/\"Name\": \"$INTERAL_MASTER_ELB_CNAME\",/g" master/internal-master-elb-a-record-terminate.json
+
+aws route53 change-resource-record-sets \
+--hosted-zone-id $HOSTED_ZONE \
+--change-batch file://master/internal-master-elb-a-record.json

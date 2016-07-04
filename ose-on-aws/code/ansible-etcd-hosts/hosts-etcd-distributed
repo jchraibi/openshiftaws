@@ -1,0 +1,27 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+etcd
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+ansible_ssh_user=root
+deployment_type=enterprise
+
+# htpasswd auth
+#openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/htpasswd'}]
+#
+# host group for masters
+[masters]
+ose-master-1.cloud.lab.eng.bos.redhat.com
+
+[etcd]
+ose-etcd-1.cloud.lab.eng.bos.redhat.com
+ose-etcd-2.cloud.lab.eng.bos.redhat.com
+ose-etcd-3.cloud.lab.eng.bos.redhat.com
+
+# host group for nodes
+[nodes]
+ose-node-[1:2].cloud.lab.eng.bos.redhat.com openshift_node_labels="{'region': 'primary', 'zone': 'default'}"
+

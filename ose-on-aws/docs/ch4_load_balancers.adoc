@@ -1,0 +1,19 @@
+[[refarch_details]]
+====  _Elastic Load Balancer_
+
+AWS provides an Elastic Load Balancer service which enables distribution of traffic
+across multiple instances in the AWS cloud.  Three ELBs are used in the deployment of
+OpenShift one for the router, one for internal master communication, and one for
+internal master communication.  There are clear advantages to doing this:
+
+* Keeps applications highly available.
+* It is elastic, so resources can scale up and down to handle capacity.
+* It is secure, it works with the AWS virtual private cloud to leverage features such as separation of public / private cloud traffic and SSL/TL termination.
+
+For more information see https://aws.amazon.com/elasticloadbalancing/
+
+AWS ELB implements parts of the <<Routing Layer>>.
+
+
+
+// vim: set syntax=asciidoc:

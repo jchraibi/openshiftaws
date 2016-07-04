@@ -1,0 +1,31 @@
+[[refarch_details]]
+== Deploying OpenShift Enterprise
+
+The following section describes the process to install OpenShift on the provisioned
+AWS instances.  If resources were provisioned using the ose-on-aws.py skip this section as the
+installation of OpenShift automatically start once the infrastructure is deployed.  If using
+the bash script to deploy the infrastructure peform the following.
+
+=== OpenShift Deployment
+The installation of OpenShift is performed by Ansible. The Ansible playbooks use a
+dynamic inventory to add the instances that were created during the bash script.
+These same steps can be used in the event that the ose-on-aws.py installer failed
+during the installation of OpenShift.
+
+Before executing the playbook ensure that the variables are changed to match the
+AWS configuration deployed and the Red Hat credentials have the entitlement for
+OpenShift.
+
+----
+cd /home/user/git/openshift-ansible-contrib/refarch-ansible
+ansible-playbook -i inventory/aws/hosts -e 'openshift_master_cluster_hostname=scollier-internal-master-elb.sysdeseng.com openshift_master_cluster_public_hostname=scollier-openshift-master.sysdeseng.com public_hosted_zone=sysdeseng.com wildcard_zone=apps.sysdeseng.com console_port=8443 deployment_type=openshift-enterprise rhn_user=user rhn_password=pass region=us-east-1' playbooks/openshift-install.yaml
+----
+
+=== Post OpenShift Deployment
+The Ansible playbook used above will not only install OpenShift but will also
+perform post installation tasks. A S3 bucket and user will also be created for
+the registry to serve as the persistent volume of container images.  The router
+and registry will be scaled according to how many infrastructure node instances
+ have been deployed.
+
+// vim: set syntax=asciidoc:

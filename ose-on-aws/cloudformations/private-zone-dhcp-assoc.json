@@ -1,0 +1,39 @@
+{
+    "Parameters" : {
+      "VPC": {
+        "Type" : "String"
+      },
+      "Region": {
+        "Type": "String"
+      },
+      "PrivateDomain": {
+        "Type": "String"
+      }
+     },
+    "Resources" : {
+        "PrivateHostedZone" : {
+            "Type" : "AWS::Route53::HostedZone",
+            "Properties" : {
+                "Name": { "Ref" : "PrivateDomain" },
+                "VPCs": [{
+                  "VPCId": { "Ref" : "VPC" },
+                  "VPCRegion": { "Ref" : "Region" }
+                        }]
+            }
+        },
+        "DHCPOpts" : {
+            "Type" : "AWS::EC2::DHCPOptions",
+            "Properties" : {
+                "DomainName": { "Ref" : "PrivateDomain" },
+                "DomainNameServers": [ "AmazonProvidedDNS" ]
+            }
+        },
+        "AssociateOpts" : {
+            "Type" : "AWS::EC2::VPCDHCPOptionsAssociation",
+            "Properties" : {
+                "VpcId": { "Ref" : "VPC" },
+                "DhcpOptionsId": { "Ref" : "DHCPOpts" }
+            }
+        }
+     }
+}

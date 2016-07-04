@@ -1,0 +1,197 @@
+[[refarch_details]]
+== Reference Architecture Configuration
+This chapter describes the reference architecture environment that is deployed which enables the configuration of a highly available OpenShift Enterprise 3 environment.
+
+=== _Elastic Compute Cloud Instance Details_
+
+Within this reference environment, the instances are deployed in multiple AZs.
+It is advised but not required to create these instances using reserved instances.
+Because most of the instances are running 24x7 using reserved instances will cut
+down on cost.  It is advised to reserve instances 1 year at a time due to AWS price
+breaks.  The instances deployed for the OpenShift environment are m4.large and
+contain an extra disk used for Docker storage.  The bastion host is a t2.micro.
+Instance sizing can be changed in the variable files for each installer.
+
+=== _Software Version Details_
+
+The following tables provide the installed software versions for the different servers that make up the Red Hat OpenShift highly available reference environment.
+
+.RHEL OSEv3 Details
+|====
+^|Software ^|Version
+
+|Red Hat Enterprise Linux 7.2 x86_64 | kernel-3.10.0-327
+| atomic-openshift{master/clients/node/sdn-ovs} | 3.2.1.x
+| docker | 1.10.x
+| ansible | 1.9-1.9.x
+| openshift ansible installer | tag: openshift-ansible-3.2.7-1
+|====
+
+
+=== _Required Channels_
+
+The following channels must be subscribed to in order to access the content needed to deploy this configuration.
+
+.Required Channels - OSEv3 Master Servers
+|====
+^|Channel ^|Repository Name
+
+| Red Hat Enterprise Linux 7 Server (RPMs) | rhel-7-server-rpms
+| Red Hat OpenShift Enterprise 3.2 (RPMs) | rhel-7-server-ose-3.2-rpms
+| Red Hat Enterprise Linux 7 Server - Extras (RPMs) | rhel-7-server-extras-rpms
+
+|====
+
+.Required Channels - OSEv3 Nodes
+|====
+^|Channel ^|Repository Name
+
+| Red Hat Enterprise Linux 7 Server (RPMs)
+rhel-7-server-rpms | Red Hat OpenShift Enterprise 3.2 (RPMs) | rhel-7-server-ose-3.2-rpms
+| Red Hat Enterprise Linux 7 Server - Extras (RPMs) | rhel-7-server-extras-rpms
+
+|====
+
+
+.Host Connectivity
+|====
+^|Hostname ^|IP Address
+| bastion.sysdeseng.com | 10.x.x.129
+| master01.sysdeseng.com | 10.x.x.130
+| master02.sysdeseng.com | 10.x.x.131
+| master03.sysdeseng.com | 10.x.x.132
+| infra-node01.sysdeseng.com | 10.x.x.133
+| infra-node02.sysdeseng.com | 10.x.x.133
+| app-node01.sysdeseng.com | 10.x.x.134
+| app-node02.sysdeseng.com | 10.x.x.135
+|====
+
+.Elastic Load Balancers
+|====
+^|ELB ^| Assigned Instances
+| openshift-master.sysdeseng.com | master01-3
+| internal-openshift-master.sysdeseng.com | master01-3
+| *.apps.sysdeseng.com | infra-nodes01-2
+|====
+
+=== _Tooling Prerequisites_
+The following steps will setup Ansible and AWSCli. The bash deployment scripts
+utilize AWSCli to launch the AWS resources while Ansible is used for the OpenShift
+installation and deployment of resources when not using the bash script.
+
+==== Ansible Setup (Required)
+
+----
+rpm -qa | grep python-2.7
+subscription-manager repos --enable rhel-7-server-optional-rpms
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum -y install ansible1.9.noarch
+yum -y install python2-boto
+yum -y install git
+yum -y install python-click
+yum -y install python-netaddr
+----
+
+==== Bash Setup
+----
+yum install -y awscli.noarch
+yum install -y jq
+----
+
+Also, the AWS Cli must be configured as well. To configure the AWS Cli peform the following
+----------------------------------------------------------------------
+aws configure
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: us-east-1
+Default output format [None]: ENTER
+----------------------------------------------------------------------
+
+==== _Git Repository_
+
+===== GitHub Repositories
+The code in the two repositories referenced below handles the installation of OpenShift and
+the accompanying infrastructure. We clone both the Reference Architecture repository
+and the OpenShift Ansible repository.  We check out a specific branch within the Openshift
+Ansible repository to ensure the code in the repository matches any references within the
+document but also that the code has been tested on both the Bash scripts and Ansible playbooks
+by the Referance Architecture team.
+
+The directories for these repositories are expected to exist in the same
+subdirectory. An example tree structure is below:
+
+----
+/home/user/git/
+|-- openshift-ansible-contrib
+|-- openshift-ansible
+----
+
+If the directory structure does not match the above the installation will fail
+because the openshift-ansible-contrib relies on the openshift-ansible playbooks
+for the installation of specific components.
+
+===== Directory Setup
+----
+cd /home/user/git
+git clone https://github.com/openshift/openshift-ansible-contrib.git
+git clone https://github.com/openshift/openshift-ansible.git
+cd openshift-ansible
+git checkout tags/openshift-ansible-3.2.7-1
+----
+
+==== _Permissions for Amazon Web Services_
+
+The deployment of OpenShift requires a user that has the proper permissions by the
+ AWS IAM administrator. The user must be able to create accounts, S3 buckets,
+roles, policies, Route53 entries, and deploy ELBs and EC2 instances.
+
+===== AWS Configuration
+The AWS Access Key ID and Secret Access Key must be exported on the workstation
+executing the Ansible playbooks. This account must have the ability to create IAM
+users, IAM Policies, and S3 buckets.
+
+To export the Access Key ID and Secret perform the following
+----
+export AWS_ACCESS_KEY_ID=foo
+export AWS_SECRET_ACCESS_KEY=bar
+----
+
+===== SSH Configuration
+The SSH configuration must be in place before launching instances into AWS. If the
+configuration is not in place the OpenShift installation will fail because Ansible
+will not be able to connect to the instances.  If using the bash installation
+which will create a SSH key enter the path in which the SSH key will be created.
+
+----
+vi /home/user/.ssh/config
+
+Host bastion
+     Hostname                 bastion.sysdeseng.com
+     StrictHostKeyChecking      no
+     ProxyCommand               none
+     CheckHostIP                no
+     ForwardAgent               yes
+     IdentityFile               /home/user/.ssh/OSE-key.pem
+
+Host *.sysdeseng.com
+     ProxyCommand               ssh ec2-user@bastion -W %h:%p
+     IdentityFile               /home/user/.ssh/OSE-key.pem
+
+----
+
+.SSH Configuration
+|====
+^|Option ^| Purpose
+| Host Bastion | Configuration Alias
+| Hostname | Hostname of the bastion instance
+| StrictHostKeyChecking | Automatically add new host keys to known host file
+| ProxyCommand | Not required for the bastion
+| CheckHostIP | Key checking is against hostname rather than IP
+| ForwardAgent | Used to forward the SSH connection
+| IdentityFile | Key used to access bastion instance
+| Host *.sysdeseng.com | Wildcard for all *.sysdeseng instances
+| ProxyCommand | SSH command used to jump from the bastion host to another host in the environment
+| IdentityFile | Key used for all *.sysdeseng instances
+|====
+
+// vim: set syntax=asciidoc:

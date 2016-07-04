@@ -1,0 +1,48 @@
+---
+- name: Create VPC and subnets
+  ec2_vpc:
+    state: present
+    cidr_block: "{{ cidr_block }}"
+    resource_tags: { "Name":"{{ vpc_prefix }}" }
+    subnets:
+      - cidr: "{{ cidr_sub1 }}"
+        az: "{{ lookup('az1', region) }}"
+        resource_tags: {"Name": "{{ subnet_prefix }}-1" }
+      - cidr: "{{ cidr_sub2 }}"
+        az: "{{ lookup('az2', region) }}"
+        resource_tags: {"Name": "{{ subnet_prefix }}-2" }
+      - cidr: "{{ cidr_sub3 }}"
+        resource_tags: {"Name": "{{ subnet_prefix }}-3" }
+        az: "{{ lookup('az3', region) }}"
+    internet_gateway: True
+    route_tables:
+      - subnets:
+          - "{{ cidr_sub1 }}"
+          - "{{ cidr_sub2 }}"
+          - "{{ cidr_sub3 }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gw: igw
+    region: "{{ region }}"
+  register: vpc
+- name: Tag VPC with name
+  ec2_tag:
+    resource: "{{vpc.vpc_id}}"
+    region: "{{ region }}"
+    state: present
+    tags:
+        Name: "{{ vpc_prefix }}"
+- name: Find the first public subnet
+  set_fact: subnet1="{{item.id}}"
+  when: item.resource_tags.Name == "{{ subnet_prefix }}-1"
+  with_items: vpc.subnets
+- name: Find the second public subnet
+  set_fact: subnet2="{{item.id}}"
+  when: item.resource_tags.Name == "{{ subnet_prefix }}-2"
+  with_items: vpc.subnets
+- name: Find the third public subnet
+  set_fact: subnet3="{{item.id}}"
+  when: item.resource_tags.Name == "{{ subnet_prefix }}-3"
+  with_items: vpc.subnets
+- name: Change the fact name
+  set_fact: vpc="{{vpc.vpc_id}}"

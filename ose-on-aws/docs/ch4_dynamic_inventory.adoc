@@ -1,0 +1,151 @@
+[[refarch_details]]
+=== Dynamic Inventory
+A python script provides the ability to query the Amazon API to display information
+about EC2 instances. The python script can also be used to provide an inventory
+for Ansible.  For the OpenShift installation, the python script and the Ansible
+module "add_host" allow for instances to be grouped based on their purpose to
+be used in later playbooks.
+
+==== _Using the Python Script_
+The python script included in the git repository will output any instances currently
+running in AWS regardless of region.
+
+----
+python inventory/aws/hosts/ec2.py
+
+----
+
+*Example output:*
+
+----
+{
+  "_meta": {
+    "hostvars": {
+      "ec2-52-90-31-204.compute-1.amazonaws.com": {
+        "ec2__in_monitoring_element": false,
+        "ec2_ami_launch_index": "0",
+        "ec2_architecture": "x86_64",
+        "ec2_client_token": "",
+        "ec2_dns_name": "ec2-52-90-31-204.compute-1.amazonaws.com",
+        "ec2_ebs_optimized": false,
+        "ec2_eventsSet": "",
+        "ec2_group_name": "",
+        "ec2_hypervisor": "xen",
+        "ec2_id": "i-67b32ffa",
+        "ec2_image_id": "ami-10251c7a",
+        "ec2_instance_type": "t2.medium",
+        "ec2_ip_address": "52.90.31.204",
+        "ec2_item": "",
+        "ec2_kernel": "",
+        "ec2_key_name": "OSE-key",
+        "ec2_launch_time": "2016-04-27T20:39:33.000Z",
+        "ec2_monitored": false,
+        "ec2_monitoring": "",
+        "ec2_monitoring_state": "disabled",
+        "ec2_persistent": false,
+        "ec2_placement": "us-east-1c",
+        "ec2_platform": "",
+        "ec2_previous_state": "",
+        "ec2_previous_state_code": 0,
+        "ec2_private_dns_name": "ip-10-20-1-181.ec2.internal",
+        "ec2_private_ip_address": "10.20.1.181",
+        "ec2_public_dns_name": "ec2-52-90-31-204.compute-1.amazonaws.com",
+        "ec2_ramdisk": "",
+        "ec2_reason": "",
+        "ec2_region": "us-east-1",
+        "ec2_requester_id": "",
+        "ec2_root_device_name": "/dev/sda1",
+        "ec2_root_device_type": "ebs",
+        "ec2_route53_names": [
+          "ose-master01.sysdeseng.com"
+        ],
+        "ec2_security_group_ids": "sg-614ea81a",
+        "ec2_security_group_names": "ose_master_sg",
+        "ec2_sourceDestCheck": "true",
+        "ec2_spot_instance_request_id": "",
+        "ec2_state": "running",
+        "ec2_state_code": 16,
+        "ec2_state_reason": "",
+        "ec2_subnet_id": "subnet-179a023d",
+        "ec2_tag_Name": "ose-master01",
+        "ec2_tag_openshift-role": "master",
+        "ec2_virtualization_type": "hvm",
+        "ec2_vpc_id": "vpc-0b8f7a6c"
+      },
+  "tag_openshift-role_master": [
+    "ec2-54-174-138-5.compute-1.amazonaws.com",
+    "ec2-54-87-178-55.compute-1.amazonaws.com",
+    "ec2-52-90-31-204.compute-1.amazonaws.com"
+  ],
+  "us-east-1": [
+    "ec2-54-174-138-5.compute-1.amazonaws.com",
+    "ec2-54-175-170-163.compute-1.amazonaws.com",
+    "ec2-54-87-133-28.compute-1.amazonaws.com",
+    "ec2-54-152-223-24.compute-1.amazonaws.com",
+    "ec2-54-175-112-101.compute-1.amazonaws.com",
+    "ec2-54-87-178-55.compute-1.amazonaws.com",
+    "ec2-52-202-83-35.compute-1.amazonaws.com",
+    "ec2-52-90-31-204.compute-1.amazonaws.com"
+  ]
+}
+----
+The output above is a subset of the information from AWS queried by the python
+script. If the above were to be gather manually, it would require browsing the
+Route53 and EC2 consoles within the AWS console.  For the installation of
+OpenShift, the use of tag_openshift-role will be used to select only the instances
+ required for the installation.
+
+==== _Ansible Add Host Module_
+Using the add_host Ansible module allows for instances to be grouped together
+based on the role that the instance serves within OpenShift.  The playbook uses
+the output of the python script to request all of the instances currently
+deployed and then parses the output utilizing the tag_openshift_role to define
+infrastructure nodes, application nodes and the master nodes. The different group
+names allow for specific rpms and configuration to be applied in later playbooks
+based on the the groups that an instances is a member.
+
+[source,yaml]
+----
+include::../refarch-ansible/playbooks/roles/instance-groups/tasks/main.yaml[]
+----
+
+First, the output is broken up by the tag openshift-role and if the tag matches
+the specific value (such as openshift-role_master) then the ec2_tag_Name variable
+is defined.  The process occurs will run in a loop until there are no longer
+instances that match the defined tag. Once that is complete the playbook moves to
+the next tag(such as openshift-role_infra) defining any instances deployed and
+populating the ec2_tag_Name field. Finally, any nodes with the tag openshift-role_app
+will be defined.
+
+If the playbook were to be viewed after the values were computed it would appear
+as follows.
+----
+ ---
+- name: Add masters to requisite groups
+  add_host:
+    name: "ose-master01.sysdeseng.com"
+    groups: masters, etcd, nodes, cluster_hosts
+    openshift_node_labels:
+      role: master
+- name: Add masters to requisite groups
+  add_host:
+    name: "ose-master02.sysdeseng.com"
+    groups: masters, etcd, nodes, cluster_hosts
+    openshift_node_labels:
+      role: master
+....
+----
+
+The tag used for creating the host groups can be changed by modifying the variable
+file in the ansible directory.
+
+----
+vi /home/user/ose-on-aws/refarch-ansible/vars/main.yaml
+# Instance group tag
+master_group_tag: tag_openshift-role_master
+app_group_tag: tag_openshift-role_infra
+infra_group_tag: tag_openshift-role_app
+----
+
+
+// vim: set syntax=asciidoc:

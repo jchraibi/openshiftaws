@@ -1,0 +1,10 @@
+[[refarch_details]]
+
+===  _SSH Key_
+
+A new SSH key can be created as part of the deployment.  If a SSH key exists
+already, it can be used.  The SSH key is created in two steps, first, the key is
+generated and uploaded, then the private key is written out so it can be used to
+ connect to the instances later.
+
+// vim: set syntax=asciidoc:

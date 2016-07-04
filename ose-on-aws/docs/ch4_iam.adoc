@@ -1,0 +1,16 @@
+[[refarch_details]]
+====  _Identity and Access Management_
+
+AWS provides IAM to securely control access to AWS services and resources for 
+users. In this guide, IAM provides security for our admins creating the cluster
+as well roles for the nodes to read and write to AWS S3 buckets, implementing
+the <<Identity Management Service>>.
+
+This reference architecture requires that we have a S3 and EBS policy.
+
+For more information see https://aws.amazon.com/iam/
+
+Two accounts will need to be created for OpenShift. One account will manage a S3 Bucket and the other will manage EBS volumes. The S3 bucket will be used for the registry while the other will be used for persistent storage.
+
+
+// vim: set syntax=asciidoc:

@@ -1,0 +1,181 @@
+[[refarch_details]]
+== Deploying with Ansible
+The script and playbooks provided within the git repository below deploys
+infrastructure, installs and configures OpenShift, and performs post installation
+tasks such as scaling the router and registry.  The playbooks also create specific
+roles, policies, and users required for cloud provider configuration in OpenShift
+ and management of a newly created S3 bucket to manage container images.
+
+=== Deploying the Environment
+Within the openshift-ansible-contrib git repository is a python script called ose-on-aws.py
+that launches AWS resources and installs OpenShift on the new resources.
+Intelligence is built into the playbooks to allow for certain variables to be
+set using options provided by the ose-on-aws.py script.  The script allows for
+deployment into an existing environment(brownfield) or a new environment(greenfield)
+using a series of Ansible playbooks.  Once the Ansible playbooks begin, the installation
+will automatically flow from the AWS deployment to the OpenShift deployment and post
+installation tasks.
+
+==== Introduction to ose-on-aws.py
+The ose-on-aws.py contains many different configuration options such as changing the AMI,
+instance size, and the ability to use a currently deployed bastion host. The region can also
+be changed but keep in mind the AMI may need to be changed if the Red Hat gold image is not
+currently assigned to the AWS account or if the AMI ID is different.  To see all of the
+potential options the --help trigger is available.
+
+----
+/home/user/ose-on-aws/refarch-ansible/ose-on-aws.py --help
+Usage: ose-on-aws.py [OPTIONS]
+
+Options:
+  --console-port INTEGER RANGE  OpenShift web console port  [default: 8443]
+  --deployment-type TEXT        OpenShift deployment type  [default:
+                                openshift-enterprise]
+  --region TEXT                 ec2 region  [default: us-east-1]
+  --ami TEXT                    ec2 ami  [default: ami-10251c7a]
+  --master-instance-type TEXT   ec2 instance type  [default: t2.medium]
+  --node-instance-type TEXT     ec2 instance type  [default: t2.medium]
+  --keypair TEXT                ec2 keypair name
+  --create-key TEXT             Create SSH keypair  [default: no]
+  --key-path TEXT               Path to SSH public key. Default is /dev/null
+                                which will skip the step  [default: /dev/null]
+  --create-vpc TEXT             Create VPC  [default: yes]
+  --vpc-id TEXT                 Specify an already existing VPC
+  --subnet-id1 TEXT             Specify a subnet within the existing VPC
+  --subnet-id2 TEXT             Specify a subnet within the existing VPC(can
+                                be a duplicate of subnet_id1)
+  --subnet-id3 TEXT             Specify a subnet within the existing VPC(can
+                                be a duplicate of subnet_id1)
+  --public-hosted-zone TEXT     hosted zone for accessing the environment
+  --app-dns-prefix TEXT         application dns prefix  [default: apps]
+  --rhn-user TEXT               Red Hat Subscription Management User
+  --rhn-password TEXT           Red Hat Subscription Management Password
+  --byo-bastion TEXT            skip bastion install when one exists within
+                                the cloud provider  [default: no]
+  --no-confirm                  Skip confirmation prompt
+  -h, --help                    Show this message and exit.
+----
+
+==== Greenfield Deployment
+For deploying OpenShift into a new environment the ose-on-aws.py will not only create
+instances, load balancers, route53 entries, and iam users as ssh key can also be
+entered to be uploaded and used with the new instances. Once the values have been entered
+into the ose-on-aws.py script all values will be presented and the script will prompt to 
+continue with the values or exit.  By default, the Red Hat gold image AMI is used when 
+provisioning instances but can be changed when executing the ose-on-aws.py.
+
+If no SSH key currently exists within AWS
+----
+./ose-on-aws.py --create-key=yes --rhn-user=rhn-user --rhn-password=rhn-password \ --public-hosted-zone=sysdeseng.com --key-path=/home/user/.ssh/id_rsa.pub 
+\ --keypair=OSE-key
+----
+
+If an SSH key has already uploaded to AWS
+----
+./ose-on-aws.py --rhn-user=rhn-user --rhn-password=rhn-password \ 
+--public-hosted-zone=sysdeseng.com --keypair=OSE-key
+----
+
+*Example of Greenfield Deployment values*
+----
+Configured values:
+    ami: ami-10251c7a
+    region: us-east-1
+    master_instance_type: t2.medium
+    node_instance_type: t2.medium
+    keypair: OSE-key
+    create_key: no
+    key_path: /dev/null
+    create_vpc: yes
+    vpc_id: None
+    subnet_id1: None
+    subnet_id2: None
+    subnet_id3: None
+    byo_bastion: no
+    console port: 8443
+    deployment_type: openshift-enterprise
+    public_hosted_zone: sysdeseng.com
+    app_dns_prefix: apps
+    apps_dns: apps.sysdeseng.com
+    rhn_user: rhn-user
+    rhn_password: *******
+
+Continue using these values? [y/N]:y
+----
+
+==== Brownfield Deployment
+The ose-on-aws.py script allows for deployments into an existing environment
+in which a VPC already exists and subnets are already created. By default, the Red Hat
+gold image AMI is used when provisioning instances but can be changed when executing
+the ose-on-aws.py.
+
+Running the following will prompt for subnets and the VPC to deploy the instances
+ and OpenShift.
+----
+./ose-on-aws.py --create-vpc=no --rhn-user=rhn-user --rhn-password=rhn-password \ --public-hosted-zone=sysdeseng.com --keypair=OSE-key
+
+Specify the VPC ID: vpc-2210b745
+Specify the first subnet within the existing VPC: subnet-16e1cb2b
+Specify the second subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-477b597a
+Specify the third  subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-8d1951d5
+----
+
+In the case that a bastion instance has already been deployed an option within ose-on-aws.py exists to
+not deploy the bastion instance.
+
+----
+./ose-on-aws.py --create-vpc=no --rhn-user=rhn-user --rhn-password=rhn-password \ --public-hosted-zone=sysdeseng.com --keypair=OSE-key --byo-bastion=yes
+
+Specify the VPC ID: vpc-2210b745
+Specify the first subnet within the existing VPC: subnet-16e1cb2b
+Specify the second subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-477b597a
+Specify the third  subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-8d1951d5
+----
+
+As stated in the Greenfield deployment the option exists to not use the Red Hat provided gold image AMI.
+Using the command same command from above the ami trigger allows the default value to be changed.
+
+----
+./ose-on-aws.py --create-vpc=no --rhn-user=rhn-user --rhn-password=rhn-password \ --public-hosted-zone=sysdeseng.com --keypair=OSE-key --byo-bastion=yes \
+--ami=ami-2051294a
+
+Specify the VPC ID: vpc-2210b745
+Specify the first subnet within the existing VPC: subnet-16e1cb2b
+Specify the second subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-477b597a
+Specify the third  subnet within the existing VPC(can be a duplicate of subnet_id1: subnet-8d1951d5
+----
+
+*Example of Brownfield Deployment values*
+----
+Configured values:
+    ami: ami-2051294a
+    region: us-east-1
+    master_instance_type: t2.medium
+    node_instance_type: t2.medium
+    keypair: OSE-key
+    create_key: no
+    key_path: /dev/null
+    create_vpc: no
+    vpc_id: vpc-2210b745
+    subnet_id1: subnet-16e1cb2b
+    subnet_id2: subnet-477b597a
+    subnet_id3: subnet-8d1951d5
+    byo_bastion: yes
+    console port: 8443
+    deployment_type: openshift-enterprise
+    public_hosted_zone: sysdeseng.com
+    app_dns_prefix: apps
+    apps_dns: apps.sysdeseng.com
+    rhn_user: rhn-user
+    rhn_password: *******
+
+Continue using these values? [y/N]:y
+----
+
+==== Post Ansible Deployment
+Once the playbooks have successfully completed the next steps will be to perform
+the steps defined in <<Post Deployment>>.  In the 
+event that the installation failed during the OpenShift follow the steps in link:ch6_deploying-ose.adoc[Deploying OSE] 
+to restart the installation of OpenShift.
+
+// vim: set syntax=asciidoc:

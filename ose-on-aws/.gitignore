@@ -1,0 +1,47 @@
+# Ignore RHN cred file
+*vars/main.yaml
+*.pdf
+awscli/scollier-test.pem
+.ansible
+*/cached_facts/
+
+# Remove all the deployment logs
+awscli/deployment-logs/deploy*
+
+# remove all the json files
+awscli/app-nodes/app-node/node00-a-record-terminate.json
+awscli/app-nodes/app-node/node00-a-record.json
+awscli/app-nodes/app-node/node00-ptr-record-terminate.json
+awscli/app-nodes/app-node/node00-ptr-record.json
+awscli/app-nodes/app-node/node01-a-record-terminate.json
+awscli/app-nodes/app-node/node01-a-record.json
+awscli/app-nodes/app-node/node01-ptr-record-terminate.json
+awscli/app-nodes/app-node/node01-ptr-record.json
+awscli/bastion/bastion-resource-record-terminate.json
+awscli/bastion/bastion-resource-record.json
+awscli/dhcp-config/dhcp-opt
+awscli/iam/pol_arn
+awscli/infra-nodes/node/node00-a-record-terminate.json
+awscli/infra-nodes/node/node00-a-record.json
+awscli/infra-nodes/node/node00-ptr-record-terminate.json
+awscli/infra-nodes/node/node00-ptr-record.json
+awscli/infra-nodes/node/node01-a-record-terminate.json
+awscli/infra-nodes/node/node01-a-record.json
+awscli/infra-nodes/node/node01-ptr-record-terminate.json
+awscli/infra-nodes/node/node01-ptr-record.json
+awscli/master/master/master-elb-a-record-terminate.json
+awscli/master/master/master-elb-a-record.json
+awscli/master/master/master00-a-record-terminate.json
+awscli/master/master/master00-a-record.json
+awscli/master/master/master00-ptr-record-terminate.json
+awscli/master/master/master00-ptr-record.json
+awscli/master/master/master01-a-record-terminate.json
+awscli/master/master/master01-a-record.json
+awscli/master/master/master01-ptr-record-terminate.json
+awscli/master/master/master01-ptr-record.json
+awscli/master/master/master02-a-record-terminate.json
+awscli/master/master/master02-a-record.json
+awscli/master/master/master02-ptr-record-terminate.json
+awscli/master/master/master02-ptr-record.json
+awscli/router-elb/router-elb-a-record-terminate.json
+awscli/router-elb/router-elb-a-record.json

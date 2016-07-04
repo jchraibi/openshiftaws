@@ -1,0 +1,19 @@
+[[refarch_details]]
+====  _Simple Storage Services_
+
+AWS has provides a Simple Storage Service.  S3 is used for persistent storage of
+container images.  Per Amazon; "Amazon Simple Storage Service (Amazon S3), provides
+developers and IT teams with secure, durable, highly-scalable cloud storage. Amazon
+S3 is easy to use object storage, with a simple web service interface to store
+and retrieve any amount of data from anywhere on the web. With Amazon S3, you pay
+ only for the storage you actually use. There is no minimum fee and no setup cost."
+
+Amazon S3 is used to implement <<Central Storage Service>>.
+
+For more information see https://aws.amazon.com/s3/
+
+
+
+
+
+// vim: set syntax=asciidoc:

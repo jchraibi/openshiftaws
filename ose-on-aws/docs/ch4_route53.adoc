@@ -1,0 +1,37 @@
+[[refarch_details]]
+=== Route53
+
+AWS has a DNS web service, per Amazon; "Amazon Route 53 is a highly available
+and scalable cloud Domain Name System (DNS) web service. It is designed to give
+developers and businesses an extremely reliable and cost effective way to route
+end users to Internet applications by translating names like www.example.com into
+the numeric IP addresses like 192.0.2.1 that computers use to connect to each
+other."
+
+This reference implementation will use Amazon Route 53 to implement all requirements
+of the <<Domain Name System (DNS)>> component.
+
+For more information see https://aws.amazon.com/route53/
+
+Route53 will manage DNS records for the OpenShift environment.
+
+==== Public Zone
+
+The Public Route53 zone requires a domain name either purchased through AWS or
+another external provider such as Google Domains or GoDaddy.  Once the zone in
+created in Route53, the name servers provided by Amazon will need to be added to
+the registrar.
+
+==== Hosted Zone Setup
+* From the main AWS dashboard, in the Compute section click Route53
+** Click Hosted Zones
+*** Click Create Hosted Zone
+**** Input a Domain Name: sysdeseng.com
+**** Input a Comment: Public Zone for RH Reference Architecture
+**** Type: Public Hosted Zone
+***** Click Create
+
+Once the Pubic Zone is created select the radio button for the Domain and copy the Name Servers from the right and add those to the external registrar if applicable.
+
+
+// vim: set syntax=asciidoc:

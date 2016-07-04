@@ -1,0 +1,36 @@
+[[refarch_details]]
+== Operational Management
+
+With the successful deployment of OpenShift, the following section demonstrates how to confirm proper functionality of the Red Hat High Availability Add-On.
+
+=== _OpenShift v3 High Availability Management_
+
+The following steps are to be performed on the master01 server unless otherwise specified.
+
+
+=== _OpenShift_
+
+
+=== _etcd_
+
+
+This section focuses on the etcd cluster. It describes the different commands to ensure the cluster is healthy.
+
+
+. Issue the `etcdctl` command to confirm that the cluster is healthy.
++
+----
+# etcdctl -C https://master01.sysdeseng.com:2379,https://master02.sysdeseng.com:2379,https://master03.sysdeseng.com:2379 --ca-file /etc/etcd/ca.crt --cert-file=/etc/openshift/master/master.etcd-client.crt --key-file=/etc/openshift/master/master.etcd-client.key cluster-health
+cluster is healthy
+member 33831519f1425cdb is healthy
+member 5a2b972b868f9514 is healthy
+member c421184c33f2c077 is healthy
+----
++
+
+NOTE: In this configuration the `etcd` services are distributed among the OpenShift master nodes. An alternative configuration would be to distribute the `etcd` service amongst its own nodes. An example /etc/ansible/hosts file showing that configuration can be found in Appendix D. The etcd cluster requires three additional nodes. The only change in the file is the hostnames in the [etcd] stanza.
+
+=== _Testing Failure_
+
+
+// vim: set syntax=asciidoc:

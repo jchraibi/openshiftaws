@@ -1,0 +1,26 @@
+[[refarch_details]]
+
+===  _Virtual Private Cloud_
+
+An AWS VPC allows the ability to set up custom virtual networking which includes subnets,
+IP address ranges, route tables and gateways. In this reference implementation
+guide, a dedicated VPC is created with all its accompanying services to provide a
+stable network for our OpenShift v3 deployment.
+
+For more information see https://aws.amazon.com/vpc/
+
+A VPC is created as a logical representation of a networking environment in the Amazon Web Services cloud. The following subnets and CIDR listed below are used. Make sure to substitute values that do not conflict with an existing CIDR or subnet in the environment.
+
+
+.VPC Networking
+|====
+^|CIDR / Subnet ^| Values
+| CIDR | 10.30.0.0/16
+| Subnet 1 | 10.30.1.0/24
+| Subnet 2 | 10.30.2.0/24
+| Subnet 3 | 10.30.3.0/24
+|====
+
+The VPC is created and then a human readable tag is assigned. Three subnets are created and tagged in the VPC. Each subnet is created in different availability zones. This allows for a production level of high availibility. In addition, an internet gateway and route table are created and attached to the VPC. The route table has a destination internet gateway associated so that traffic can exit the VPC.  The route table is assigned to all three subnets.  Finally DNS hostnames are enables so that anything that gets added to that VPC gets a DNS hostname.
+
+// vim: set syntax=asciidoc:

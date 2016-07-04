@@ -1,0 +1,24 @@
+[[refarch_details]]
+=== Nodes
+Nodes are AWS instances that serve a specific purpose for OpenShift.  All nodes
+can be scaled before or after the OpenShift installation.
+
+==== Master nodes
+The OpenShift master nodes serve multiple roles in the environment.  Each master
+node runs the etcd service and the Openshift controller and api services.  The
+master node handles the orchestration of containers, management of projects, and
+Kubernetes based activities like scaling and performing rolling updates.
+
+==== Infrastructure nodes
+The infrastructure nodes are used for the router and registry containers. These
+nodes can also be used if the optional components Kibana and Hawkular metrics.
+
+==== Application nodes
+The Application nodes are the instances where non-infrastructure based containers
+are ran.  A configuration parameter is set on the master [defaultNodeSelector: "role=app"]
+which ensures that OpenShift user containers will be places on the application nodes
+by default.
+
+
+
+// vim: set syntax=asciidoc:

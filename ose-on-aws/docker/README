@@ -1,0 +1,17 @@
+Deploy OSE on AWS using the aws cli.
+
+* Get latest copy of awscli and ansible code by creating a new tag in gitlab and downloading that to this directory.
+
+* Copy your AWS credentials to the aws directory here.
+
+* Build
+
+```
+docker build -t ose-on-aws .
+```
+
+* Run
+
+```
+docker run -v ~/aws:/root/.aws -it ose-on-aws ./deploy-openshift
+```

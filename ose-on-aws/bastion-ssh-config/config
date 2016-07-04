@@ -1,0 +1,8 @@
+Host *.cooktheryan.com
+     ProxyCommand               ssh ec2-user@bastion -W %h:%p
+     IdentityFile               /home/rcook/git/ose-on-aws/ansible/ssh_key/roles/key/files/ose.pub
+
+Host bastion
+     Hostname                   bastion.cooktheryan.com
+     CheckHostIP                no
+     ForwardAgent               yes

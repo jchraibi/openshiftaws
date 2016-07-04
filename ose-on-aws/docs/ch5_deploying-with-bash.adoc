@@ -1,0 +1,48 @@
+[[refarch_details]]
+== Deploying with Bash
+The bash scripts provided within the git repository below deploys the infrastructure.  The
+bash scripts are catered to a greenfield AWS environment. Similar to the Ansible playbooks,
+all of the components that are required for a highly-available OpenShift environment are deployed. 
+The scripts create a VPC, multiple instances, three ELBs, roles, policies, and users required for cloud provider configuration
+ in OpenShift.  A vars file included in the repository allow for a customization of the AWS deployment.
+
+=== Deploying the Infrastructure
+Within the openshift-ansible-contrib git repository is a bash script called deploy-openshift.
+Certain variables must be set to allow for successful deployment of the AWS infrastructure. A new
+SSH key will be created for the newly deployed instances.
+
+==== Variables for the Bash Deployment
+Certain variables must be set in the variable script before beginning. Make the following
+changes to the vars file
+
+----
+vi /home/user/ose-on-aws/awscli/vars
+UNIQ_VAR="prod"
+INFRA_DNSINFRA_DNS=sysdeseng.com
+KEY_NAME=OSE-key
+----
+
+UNIQ_VAR appends a unique string in-front of all resources deployed with the bash script.
+This is incredibly useful if the environment contains many resources or multiple OpenShift
+deployments.
+
+==== Executing the Bash Deployment
+The bash script has checks in place that will ensure each step is completed before
+moving onto the next.
+
+----
+cd /home/user/ose-on-aws/awscli
+./deploy-openshift
+----
+==== Deployment logs
+The bash script logs the creation of AWS resources to a directory and timestamps the output. The
+output will be located within the awscli directory under the subdirectory of deployment-logs below
+is an example path of a deployment log.
+
+./deployment-logs/deploy-openshift-worklaptop-2016-04-25_00:20:03.log
+
+==== Post Bash Deployment
+Once the bash script has successfully completed the next steps will be to perform
+the installation of OpenShift follow the steps in ch6_deploying-ose.
+
+// vim: set syntax=asciidoc:

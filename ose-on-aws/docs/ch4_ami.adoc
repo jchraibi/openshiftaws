@@ -1,0 +1,19 @@
+[[refarch_details]]
+====  _Amazon Machine Images_
+AMIs provide the required information to launch an instance. In this guide, the gold
+image provided by Red Hat is used. The AMI is shared to a specific AWS account
+which is priced less than the RHEL image provided by AWS.
+
+For more information see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html
+===== Red Hat Gold Image
+The Red Hat provided gold image allows Instances to be ran at a cheaper cost than
+using the Amazon provided RHEL image. Since a subscription is required to install
+OpenShift then it is not necessary to use the Amazon provided image which has a
+built in charge back for the RHEL subscription. 
+
+To register for the Red Hat Gold Image
+----
+https://www.redhat.com/en/technologies/cloud-computing/cloud-access
+----
+
+// vim: set syntax=asciidoc:

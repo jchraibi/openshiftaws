@@ -1,0 +1,12 @@
+[[refarch_details]]
+
+=== _DHCP_
+DHCP options are setup and attached to the VPC when using the bash script to specify a domain
+name. By default, VPC creation with the bash script does include "domain-name = ec2.internal". This
+configuration is applied to us-east-1 which is the default location of AWS resources deployed using
+the bash scripts. The domain-name is ec2.internal is used by Kubernetes and OpenShift to look up nodes
+ and attach EBS storage when applicable. Without this configuration the OpenShift node service is 
+unable to start due to the unability to of OpenShift to connect to the AWS to query EC2 instance 
+information.
+
+// vim: set syntax=asciidoc:

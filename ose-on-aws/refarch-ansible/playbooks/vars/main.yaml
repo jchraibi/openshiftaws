@@ -1,0 +1,34 @@
+# AWS instance specific configuration
+bastion_instance_type: t2.micro
+docker_storage: 25
+vpc_prefix: ose-multi-az-vpc
+subnet_prefix: OSE-Public-Subnet
+cidr_block: 10.20.0.0/16
+cidr_sub1: 10.20.1.0/24
+cidr_sub2: 10.20.2.0/24
+cidr_sub3: 10.20.3.0/24
+
+
+# Route53
+master_instance_prefix: ose-master
+app_instance_prefix: ose-app-node
+infra_instance_prefix: ose-infra-node
+
+# Instance group tag
+master_tag: master
+infra_tag: infra
+app_tag: app
+master_group_tag: "tag_openshift-role_{{ master_tag }}"
+app_group_tag: "tag_openshift-role_{{ app_tag }}"
+infra_group_tag: "tag_openshift-role_{{ infra_tag }}"
+
+# OpenShift variables
+debug_level: 2
+openshift_master_cluster_hostname: "internal-openshift-master.{{ public_hosted_zone }}"
+openshift_master_cluster_public_hostname: "openshift-master.{{ public_hosted_zone }}"
+osm_default_subdomain: "{{ wildcard_zone }}"
+deployment_type: openshift-enterprise
+openshift_master_identity_providers: [ {'name': 'google', 'kind': 'GoogleIdentityProvider', 'login': 'true', 'challenge': 'false', 'mapping_method': 'claim', 'client_id': '246358064255-5ic2e4b1b9ipfa7hddfkhuf8s6eq2rfj.apps.googleusercontent.com', 'client_secret': 'Za3PWZg7gQxM26HBljgBMBBF', 'hosted_domain': 'redhat.com'} ]
+
+# Registry variables
+s3_username: "openshift-s3-docker-registry"

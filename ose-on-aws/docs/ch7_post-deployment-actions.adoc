@@ -1,0 +1,52 @@
+[[refarch_details]]
+== Post Deployment
+
+With the successful deployment of OpenShift, the following section demonstrates
+how to confirm proper functionality of the OpenShift environment.
+
+=== Testing an Application
+An Ansible script in the git repository will allow for an application to be deployed
+which will test the functionality of the master, nodes, registry, and router. To
+test the deployment execute the playbook as follows.
+
+----
+ansible-playbook -i inventory/aws/hosts/ -e 'wildcard_zone=apps.sysdeseng.com' playbooks/demo.yaml
+----
+
+Upon successful completion of the playbook a URL will be displayed.
+
+=== Configuring OpenShift CLI
+The OpenShift client allows for a user to perform the same tasks on the CLI
+that are possible within the web interface.  The OpenShift client can be installed
+and configured as follows.
+
+If the workstation has access to the atomic-openshift-clients package through yum
+perform the following.
+
+----
+yum -y install atomic-openshift-clients
+----
+
+Also, the package is provided at https://access.redhat.com/downloads/content/290/ver=3.2/rhel---7/3.2.0.46/x86_64/packages
+
+----
+rpm -Uvh atomic-openshift-clients*
+----
+
+==== Google OAuth
+When using Google OAuth a token will need to be requested to authenticate for use 
+with oc commands on the CLI.  Peform the following to receive a token and authenticate
+to OpenShift.
+
+Browse to https://sysdeseng.com:8443/oauth/token/request
+
+Run the following from the command line
+
+----
+oc login --token=stucAk6fffPp-jsss-8dtIq7_f-8KffffN8DOwaq0aA8 --server=https://sysdeseng.com:8443
+----
+
+Once authenticated the user can run oc commands locally rather than using the web interface
+or connecting to the master over SSH.
+
+// vim: set syntax=asciidoc:
